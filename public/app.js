@@ -5,26 +5,26 @@ const hbs = require('hbs')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
 
-const indexRouter = require('./routes/index')
-const usersRouter = require('./routes/users')
+const routers = require('../routes/index')
 
 const app = express()
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'))
+app.set('views', path.join(__dirname, '../views'))
 app.set('view engine', 'hbs')
 // setup path for handlebars partials
-const partialsPath = path.join(__dirname, 'views/layouts')
+const partialsPath = path.join(__dirname, '../views/layouts')
 hbs.registerPartials(partialsPath)
 
 app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, './')))
 
-app.use('/', indexRouter)
-app.use('/users', usersRouter)
+routers.forEach(router => {
+  app.use(router.path, router.handler)
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

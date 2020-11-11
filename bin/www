@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-const app = require('../app');
+const app = require('../public/app');
 const debug = require('debug')('liteteller-backend:server');
 const http = require('http');
 
@@ -87,4 +87,6 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+
+  console.log('app is running at http://localhost:' + port)
 }
