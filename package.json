@@ -9,7 +9,6 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "chalk": "^4.1.0",
-    "cls-hooked": "^4.2.2",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",

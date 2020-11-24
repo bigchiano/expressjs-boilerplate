@@ -3,9 +3,6 @@
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
-const cls = require('cls-hooked');
-const namespace = cls.createNamespace('migration-namespace');
-Sequelize.useCLS(namespace);
 
 const basename = path.basename(__filename);
 const config = require(__dirname + '/../../config/config.js');

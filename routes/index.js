@@ -15,7 +15,7 @@ const routers = [
     handler: router
   },
   {
-    path: '/user',
+    path: '/users',
     handler: usersRouter
   },
 ]
