@@ -1,30 +1,11 @@
 const express = require('express')
+const { default: UserController } = require('../app/controllers/UserController')
 const router = express.Router()
-const db = require('../app/models')
 
 /* GET users listing. */
-router.get('/', async (req, res, next) => {
-  try {
-    const users = await db.user.findAll()
-    res.send({ users })
-  } catch (error) {
-    res.send({ error })
-  }
-})
+router.get('/', UserController.getAll)
 
 /* CREATE user. */
-router.post('/', async (req, res, next) => {
-  try {
-    const user = {
-      email: 'chris@gmail.com',
-      firstName: 'Chris',
-      lastName: 'Ochuko',
-    }
-    await db.user.create(user)
-    res.send({ user })
-  } catch (error) {
-    res.send({ error })
-  }
-})
+router.post('/', UserController.create)
 
 module.exports = router
