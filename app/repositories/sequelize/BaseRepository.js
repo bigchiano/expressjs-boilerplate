@@ -1,38 +1,27 @@
-const db = require('../../models')
 class BaseRepository {
-    constructor(model) {
-      this.Model = model
-    }
-  
-    async save(data) {
-      const model = await db[this.Model].create(data)
-  
-      return model
-    }
-  
-    async update(data, query) {
-      const model = await db[this.Model].update(data, { where: query })
-  
-      return model
-    }
-  
-    async find(data, populate = []) {
-      const findData = await db[this.Model].findOne(data)
-  
-      return findData
-    }
-  
-    async findAll(query, populate = []) {
-      const findData = await db[this.Model].findAll({ where: query })
-  
-      return findData
-    }
-      
-    async delete(query) {
-      const deleteData = await db[this.Model].destroy({ where: query })
-  
-      return deleteData
-    }
+  constructor(model) {
+    this.Model = model
   }
-  
-  module.exports = BaseRepository
+
+  async save(data) {
+    return await this.Model.create(data)
+  }
+
+  async update(data, query) {
+    return await this.Model.update(data, { where: query })
+  }
+
+  async find(query, populate = [], attributes) {
+    return await this.Model.findOne({ where: query, attributes })
+  }
+
+  async findAll(query, populate = [], attributes) {
+    return await this.Model.findAll({ where: query, attributes })
+  }
+
+  async delete(query) {
+    return await this.Model.destroy({ where: query })
+  }
+}
+
+module.exports = BaseRepository

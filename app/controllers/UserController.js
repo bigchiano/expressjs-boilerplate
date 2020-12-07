@@ -1,11 +1,28 @@
+const BaseRepository = require('../repositories/sequelize/BaseRepository')
 const UserRepository = require('../repositories/sequelize/UserRepository')
-const response = require('../utils/response')
 const User = require('../models').user
+
+const { validationResult } = require('express-validator')
+const response = require('../utils/response')
 
 class UserContoller {
   async create(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .send(response('Invalid fields', errors.array(), false))
+    }
+
     try {
-      const result = await UserRepository.create(req.body)
+      const newUser = new UserRepository()
+      const resp = await newUser.create(req.query)
+
+      const userModel = new BaseRepository(User)
+      const result = await userModel.find({ id: resp.user.dataValues.id }, [], {
+        exclude: ['tokens', 'password'],
+      })
+
       return res.status(200).send(response('User created successfully', result))
     } catch (error) {
       return res.status(400).send(error.message)
@@ -15,7 +32,9 @@ class UserContoller {
   async findAll(req, res) {
     try {
       const userModel = new BaseRepository(User)
-      const result = await userModel.findAll({})
+      const result = await userModel.findAll(req.query, [], {
+        exclude: ['tokens', 'password'],
+      })
       res.status(200).send(response('Fechted users successfully', result))
     } catch (error) {
       return res.status(400).send(error.message)
@@ -25,7 +44,9 @@ class UserContoller {
   async findOne(req, res) {
     try {
       const userModel = new BaseRepository(User)
-      const result = await userModel.findOne(req.query)
+      const result = await userModel.find(req.query, [], {
+        exclude: ['tokens', 'password'],
+      })
       res.status(200).send(response('Fechted users successfully', result))
     } catch (error) {
       return res.status(400).send(error.message)
@@ -33,7 +54,7 @@ class UserContoller {
   }
 
   async update(req, res) {
-    const result = await UserRepository.update(req.query.userId, req.body)
+    const result = await UserRepository.update(req.query.userId, req.query)
     res.status(200).send(response('User updated', result))
   }
 
@@ -43,4 +64,4 @@ class UserContoller {
   }
 }
 
-export default new UserContoller()
+module.exports = new UserContoller()

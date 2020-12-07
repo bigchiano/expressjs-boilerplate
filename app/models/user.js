@@ -3,6 +3,11 @@ const user = (sequelize, DataTypes) =>
     'user',
     {
       // Model attributes are defined here
+      id: {
+        primaryKey: true,
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -14,6 +19,13 @@ const user = (sequelize, DataTypes) =>
       lastName: {
         type: DataTypes.STRING,
         // allowNull defaults to true
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      tokens: {
+        type: DataTypes.JSON,
       },
     },
     {
