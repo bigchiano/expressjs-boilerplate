@@ -43,7 +43,7 @@ class UserRepository {
     }
 
     const userModel = new BaseRepository(User)
-    const user = await userModel.find({ email: data.email, attributes })
+    const user = await userModel.find(data.email, [],  attributes)
 
     if (!user) {
       throw new Error('Invalid user credentials')

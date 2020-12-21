@@ -32,7 +32,7 @@ class UserContoller {
   async login(req, res) {
     try {
       const userModel = new UserRepository()
-      const result = await userModel.login(req.query, [], {
+      const result = await userModel.login(req.query, {
         exclude: ['tokens', 'password'],
       })
 
