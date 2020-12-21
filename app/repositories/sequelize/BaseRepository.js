@@ -7,7 +7,7 @@ class BaseRepository {
     return await this.Model.create(data)
   }
 
-  async update(data, query) {
+  async update(query, data) {
     return await this.Model.update(data, { where: query })
   }
 

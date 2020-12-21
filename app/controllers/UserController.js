@@ -7,13 +7,6 @@ const response = require('../utils/response')
 
 class UserContoller {
   async create(req, res) {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .send(response('Invalid fields', errors.array(), false))
-    }
-
     try {
       const newUser = new UserRepository()
       const resp = await newUser.create(req.query)
@@ -21,8 +14,10 @@ class UserContoller {
       const userModel = new BaseRepository(User)
       const result = await userModel.find({ id: resp.user.dataValues.id }, [], {
         exclude: ['tokens', 'password'],
+        raw: true
       })
 
+      result.token = resp.token
       return res.status(201).send(response('User created successfully', result))
     } catch (error) {
       return res.status(400).send(error.message)
@@ -32,16 +27,14 @@ class UserContoller {
   async login(req, res) {
     try {
       const userModel = new UserRepository()
-      const result = await userModel.login(req.query, {
-        exclude: ['tokens', 'password'],
-      })
+      const result = await userModel.login(req.query)
 
       if (!result) 
         res.status(400).send(response('Invalid user credentials', {}, false))
 
-      res.status(200).send(response('Login was successful!!', result))
+      res.status(200).send(response('Login was successful', result))
     } catch (error) {
-      return res.status(401).send(error.message)
+      return res.status(401).send(response(error.message, {}, false))
     }
   }
 

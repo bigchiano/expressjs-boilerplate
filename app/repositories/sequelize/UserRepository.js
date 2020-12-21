@@ -24,6 +24,9 @@ class UserRepository {
       throw new Error('User with email already exits!!')
     }
 
+    const passwordHash = await bcrypt.hash(data.password, 10);
+    data.password = passwordHash
+
     data.id = uuidv4()
     data.tokens = JSON.stringify({})
     const user = await userModel.save(data)
@@ -37,13 +40,13 @@ class UserRepository {
     return { user, token }
   }
 
-  async login(data, attributes) {
+  async login(data) {
     if (!data.email || !data.password) {
       throw new Error('Invalid user credentials')
     }
 
     const userModel = new BaseRepository(User)
-    const user = await userModel.find(data.email, [],  attributes)
+    const user = await userModel.find({ email: data.email })
 
     if (!user) {
       throw new Error('Invalid user credentials')
@@ -54,7 +57,9 @@ class UserRepository {
       throw new Error('Invalid user credentials')
     }
 
-    const token = await user.generateAuthToken()
+    const token = await this.generateAuthToken(user)
+    delete user.dataValues.tokens
+    delete user.dataValues.password
     return { user, token }
   }
 }
