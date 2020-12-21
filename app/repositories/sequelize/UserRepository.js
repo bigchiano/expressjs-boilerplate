@@ -37,17 +37,21 @@ class UserRepository {
     return { user, token }
   }
 
-  async login(data) {
+  async login(data, attributes) {
+    if (!data.email || !data.password) {
+      throw new Error('Invalid user credentials')
+    }
+
     const userModel = new BaseRepository(User)
-    const user = await userModel.find({ email: data.email })
+    const user = await userModel.find({ email: data.email, attributes })
 
     if (!user) {
-      throw new Error('Unable to login')
+      throw new Error('Invalid user credentials')
     }
 
     const isMatch = await bcrypt.compare(data.password, user.password)
     if (!isMatch) {
-      throw new Error('Unable to login')
+      throw new Error('Invalid user credentials')
     }
 
     const token = await user.generateAuthToken()

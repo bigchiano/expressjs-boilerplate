@@ -23,9 +23,25 @@ class UserContoller {
         exclude: ['tokens', 'password'],
       })
 
-      return res.status(200).send(response('User created successfully', result))
+      return res.status(201).send(response('User created successfully', result))
     } catch (error) {
       return res.status(400).send(error.message)
+    }
+  }
+
+  async login(req, res) {
+    try {
+      const userModel = new UserRepository()
+      const result = await userModel.login(req.query, [], {
+        exclude: ['tokens', 'password'],
+      })
+
+      if (!result) 
+        res.status(400).send(response('Invalid user credentials', {}, false))
+
+      res.status(200).send(response('Login was successful!!', result))
+    } catch (error) {
+      return res.status(401).send(error.message)
     }
   }
 
