@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const UserController = require('../app/controllers/UserController')
+const { create, login, findAll, findOne } = require('../app/controllers/UserController')
 
 // middlewares
 const validateUser = require('../app/middlewares/validators/user/validateUser')
@@ -10,12 +10,12 @@ const validateUser = require('../app/middlewares/validators/user/validateUser')
  * **/
 
 /* CREATE user. */
-router.post('/create', validateUser, UserController.create)
+router.post('/create', validateUser, create)
 /* LOGIN user. */
-router.post('/login', UserController.login)
+router.post('/login', login)
 /* GET users listing. */
-router.get('/fetch', UserController.findAll)
+router.get('/fetch', findAll)
 /* GET a user. */
-router.get('/get', UserController.findOne)
+router.get('/get', findOne)
 
 module.exports = router

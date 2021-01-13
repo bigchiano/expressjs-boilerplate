@@ -2,11 +2,10 @@ const BaseRepository = require('../repositories/sequelize/BaseRepository')
 const UserRepository = require('../repositories/sequelize/UserRepository')
 const User = require('../models').user
 
-const { validationResult } = require('express-validator')
 const response = require('../utils/response')
 
 class UserContoller {
-  async create(req, res) {
+  static async create(req, res) {
     try {
       const newUser = new UserRepository()
       const resp = await newUser.create(req.query)
@@ -24,7 +23,7 @@ class UserContoller {
     }
   }
 
-  async login(req, res) {
+  static async login(req, res) {
     try {
       const userModel = new UserRepository()
       const result = await userModel.login(req.query)
@@ -38,7 +37,7 @@ class UserContoller {
     }
   }
 
-  async findAll(req, res) {
+  static async findAll(req, res) {
     try {
       const userModel = new BaseRepository(User)
       const result = await userModel.findAll(req.query, [], {
@@ -50,7 +49,7 @@ class UserContoller {
     }
   }
 
-  async findOne(req, res) {
+  static async findOne(req, res) {
     try {
       const userModel = new BaseRepository(User)
       const result = await userModel.find(req.query, [], {
@@ -62,12 +61,12 @@ class UserContoller {
     }
   }
 
-  async update(req, res) {
+  static async update(req, res) {
     const result = await UserRepository.update(req.query.userId, req.query)
     res.status(200).send(response('User updated', result))
   }
 
-  async delete(req, res) {
+  static async delete(req, res) {
     const result = await UserRepository.delete(req.params.userId)
     res.status(200).send(response('User deleted', result))
   }
