@@ -19,7 +19,7 @@ class UserContoller {
       result.token = resp.token
       return res.status(201).send(response('User created successfully', result))
     } catch (error) {
-      return res.status(400).send(error.message)
+      return res.status(400).send(response(error.message, {}, false))
     }
   }
 
@@ -28,10 +28,11 @@ class UserContoller {
       const userModel = new UserRepository()
       const result = await userModel.login(req.query)
 
-      if (!result) 
-        res.status(400).send(response('Invalid user credentials', {}, false))
+      if (!result)  {
+        return res.status(400).send(response('Invalid user credentials', {}, false))
+      }
 
-      res.status(200).send(response('Login was successful', result))
+      return res.status(200).send(response('Login was successful', result))
     } catch (error) {
       return res.status(401).send(response(error.message, {}, false))
     }
@@ -43,33 +44,49 @@ class UserContoller {
       const result = await userModel.findAll(req.query, [], {
         exclude: ['tokens', 'password'],
       })
-      res.status(200).send(response('Fechted users successfully', result))
+      
+      return res.status(200).send(response('Fechted users successfully', result))
     } catch (error) {
-      return res.status(400).send(error.message)
+      return res.status(400).send(response(error.message, {}, false))
     }
   }
 
   static async findOne(req, res) {
     try {
+      if (!req.query.id) throw new Error('User id is required!!')
+      
       const userModel = new BaseRepository(User)
       const result = await userModel.find(req.query, [], {
         exclude: ['tokens', 'password'],
       })
-      res.status(200).send(response('Fechted users successfully', result))
+
+      if (!result) {
+        return res.status(404).send(response('User not found!!', result))
+      }
+
+      return res.status(200).send(response('Fechted user successfully', result))
     } catch (error) {
-      return res.status(400).send(error.message)
+      return res.status(400).send(response(error.message, {}, false))
     }
   }
 
   static async update(req, res) {
-    const result = await UserRepository.update(req.query.userId, req.query)
-    res.status(200).send(response('User updated', result))
+    try {
+      const result = await UserRepository.update(req.query.userId, req.query)
+      return res.status(200).send(response('User updated', result))
+    } catch (error) {
+      return res.status(400).send(response(error.message, {}, false))
+    }
   }
 
   static async delete(req, res) {
-    const result = await UserRepository.delete(req.params.userId)
-    res.status(200).send(response('User deleted', result))
+    try {
+      const result = await UserRepository.delete(req.params.userId)
+      return res.status(200).send(response('User deleted', result))
+    } catch (error) {
+      return res.status(400).send(response(error.message, {}, false))
+    }
   }
 }
 
-module.exports = new UserContoller()
+module.exports = UserContoller

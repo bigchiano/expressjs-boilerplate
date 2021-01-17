@@ -1,6 +1,19 @@
-const user = (sequelize, DataTypes) =>
-  sequelize.define(
-    'user',
+'use strict'
+const { Model } = require('sequelize')
+module.exports = (sequelize, DataTypes) => {
+  class user extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
+      user.hasMany(models.wallet, { foreignKey: 'id', as: 'wallets' })
+    }
+  }
+
+  user.init(
     {
       // Model attributes are defined here
       id: {
@@ -29,8 +42,10 @@ const user = (sequelize, DataTypes) =>
       },
     },
     {
-      // Other model options go here
+      sequelize,
+      modelName: 'user',
     }
   )
 
-module.exports = user
+  return user
+}
