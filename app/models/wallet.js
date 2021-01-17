@@ -1,7 +1,8 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+'use strict'
+const { Model } = require('sequelize')
+
+const { v4: uuidv4 } = require('uuid')
+
 module.exports = (sequelize, DataTypes) => {
   class wallet extends Model {
     /**
@@ -12,15 +13,33 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
-  };
-  
-  wallet.init({
-    userId: DataTypes.STRING,
-    balance: DataTypes.DOUBLE
-  }, {
-    sequelize,
-    modelName: 'wallet',
-  });
+  }
 
-  return wallet;
-};
+  wallet.init(
+    {
+      id: {
+        primaryKey: true,
+        type: DataTypes.STRING,
+      },
+      userId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      balance: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+      }
+    },
+    {
+      hooks: {
+        beforeCreate: (wallet, options) => {
+          wallet.id = uuidv4()
+        },
+      },
+      sequelize,
+      modelName: 'wallet',
+    }
+  )
+
+  return wallet
+}

@@ -5,7 +5,6 @@ const User = require('../../models').user
 
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
-const { v4: uuidv4 } = require('uuid')
 class UserRepository {
   async generateAuthToken(user) {
     const token = jwt.sign({ id: user.id.toString() }, process.env.JWT_SECRET)
@@ -24,10 +23,6 @@ class UserRepository {
       throw new Error('User with email already exits!!')
     }
 
-    const passwordHash = await bcrypt.hash(data.password, 10);
-    data.password = passwordHash
-
-    data.id = uuidv4()
     data.tokens = JSON.stringify({})
     const user = await userModel.save(data)
     const token = await this.generateAuthToken(user)
