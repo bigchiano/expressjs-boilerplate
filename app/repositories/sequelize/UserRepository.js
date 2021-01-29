@@ -1,62 +1,108 @@
 const BaseRepository = require('./BaseRepository')
 const User = require('../../models').user
+const Wallet = require('../../models').wallet
 
 // const { sendWelcomeEmail } = require('../emails/mailer');
 
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 class UserRepository {
-  async generateAuthToken(user) {
-    const token = jwt.sign({ id: user.id.toString() }, process.env.JWT_SECRET)
-  
-    const tokens = JSON.parse(user.tokens)
-    tokens[token] = true
-    user.tokens = JSON.stringify(tokens)
-    await user.save()
-    return token
-  }
+    static async generateAuthToken(user) {
+        const token = jwt.sign(
+            { id: user.id.toString() },
+            process.env.JWT_SECRET
+        )
 
-  async create(data) {
-    const userModel = new BaseRepository(User)
-    const exists = await userModel.find({ email: data.email })
-    if (exists) {
-      throw new Error('User with email already exits!!')
+        const tokens = user.tokens
+            ? JSON.parse(user.tokens)
+            : {}
+        tokens[token] = true
+        user.tokens = JSON.stringify(tokens)
+        await user.save()
+
+        return token
     }
 
-    data.tokens = JSON.stringify({})
-    const user = await userModel.save(data)
-    const token = await this.generateAuthToken(user)
+    static async create(data) {
+        const userModel = new BaseRepository(User)
+        const userExists = await userModel.find({ email: data.email })
+        if (userExists) {
+            throw new Error('User with email already exits!!')
+        }
 
-    // send verification email
-    // sendWelcomeEmail(user.email, user.name).catch(error => {
-    //   return error.message
-    // });
+        const createUser = await userModel.save(data)
+        const token = await this.generateAuthToken(createUser)
+        const user = createUser.toJSON()
+        // create wallet for user
+        const walletModel = new BaseRepository(Wallet)
+        const userWalletData = {
+            userId: user.id,
+            ledger_balance: 0.00,
+            available_balance: 0.00
+        }
 
-    return { user, token }
-  }
+        const userWallet = await walletModel.save(userWalletData)
+        user.wallet = userWallet
 
-  async login(data) {
-    if (!data.email || !data.password) {
-      throw new Error('Invalid user credentials')
+        // send verification email
+        // sendWelcomeEmail(user.email, user.name).catch(error => {
+        //   return error.message
+        // });
+
+        delete user.tokens
+        delete user.password
+        
+        return { user, token }
     }
 
-    const userModel = new BaseRepository(User)
-    const user = await userModel.find({ email: data.email })
+    static async login(data) {
+        if (!data.email || !data.password) {
+            throw new Error('Invalid user credentials')
+        }
 
-    if (!user) {
-      throw new Error('Invalid user credentials')
+        const userModel = new BaseRepository(User)
+        const user = await userModel.find({ email: data.email }, ['wallet'])
+
+        if (!user) {
+            throw new Error('Invalid user credentials')
+        }
+
+        const isMatch = await bcrypt.compare(data.password, user.password)
+        if (!isMatch) {
+            throw new Error('Invalid user credentials')
+        }
+
+        const token = await this.generateAuthToken(user)
+        delete user.dataValues.tokens
+        delete user.dataValues.password
+        return { user, token }
     }
 
-    const isMatch = await bcrypt.compare(data.password, user.password)
-    if (!isMatch) {
-      throw new Error('Invalid user credentials')
+    static async findAll(query) {
+        const userModel = new BaseRepository(User)
+        const users = await userModel.findAll(query, ['wallet'], {
+            exclude: ['tokens', 'password']
+        })
+
+        return users
     }
 
-    const token = await this.generateAuthToken(user)
-    delete user.dataValues.tokens
-    delete user.dataValues.password
-    return { user, token }
-  }
+    static async find(query) {
+        if (!query.id) {
+            throw new Error('User id is required!!')
+        }
+
+        const userModel = new BaseRepository(User)
+        const user = await userModel.find(query, ['wallet'], {
+            exclude: ['tokens', 'password']
+        })
+
+        if (!user) {
+            return res.status(404).send(response('User not found!!', user))
+        }
+
+        return user
+    }
 }
 
 module.exports = UserRepository

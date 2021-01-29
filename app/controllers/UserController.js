@@ -7,16 +7,7 @@ const response = require('../utils/response')
 class UserContoller {
   static async create(req, res) {
     try {
-      const newUser = new UserRepository()
-      const resp = await newUser.create(req.query)
-
-      const userModel = new BaseRepository(User)
-      const result = await userModel.find({ id: resp.user.dataValues.id }, [], {
-        exclude: ['tokens', 'password'],
-        raw: true
-      })
-
-      result.token = resp.token
+      const result = await UserRepository.create(req.query)
       return res.status(201).send(response('User created successfully', result))
     } catch (error) {
       return res.status(400).send(response(error.message, {}, false))
@@ -25,13 +16,7 @@ class UserContoller {
 
   static async login(req, res) {
     try {
-      const userModel = new UserRepository()
-      const result = await userModel.login(req.query)
-
-      if (!result)  {
-        return res.status(400).send(response('Invalid user credentials', {}, false))
-      }
-
+      const result = await UserRepository.login(req.query)
       return res.status(200).send(response('Login was successful', result))
     } catch (error) {
       return res.status(401).send(response(error.message, {}, false))
@@ -40,11 +25,7 @@ class UserContoller {
 
   static async findAll(req, res) {
     try {
-      const userModel = new BaseRepository(User)
-      const result = await userModel.findAll(req.query, [], {
-        exclude: ['tokens', 'password'],
-      })
-      
+      const result = await UserRepository.findAll(req.query)
       return res.status(200).send(response('Fechted users successfully', result))
     } catch (error) {
       return res.status(400).send(response(error.message, {}, false))
@@ -53,18 +34,8 @@ class UserContoller {
 
   static async findOne(req, res) {
     try {
-      if (!req.query.id) throw new Error('User id is required!!')
-      
-      const userModel = new BaseRepository(User)
-      const result = await userModel.find(req.query, [], {
-        exclude: ['tokens', 'password'],
-      })
-
-      if (!result) {
-        return res.status(404).send(response('User not found!!', result))
-      }
-
-      return res.status(200).send(response('Fechted user successfully', result))
+      const user = await UserRepository.find(req.query.id)
+      return res.status(200).send(response('Fechted user successfully', user))
     } catch (error) {
       return res.status(400).send(response(error.message, {}, false))
     }
