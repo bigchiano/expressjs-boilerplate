@@ -11,8 +11,13 @@ module.exports = {
       userId: {
         type: Sequelize.STRING
       },
-      balance: {
-        type: Sequelize.DOUBLE
+      ledger_balance: {
+        type: Sequelize.DOUBLE,
+        allowNull: false,
+      },
+      available_balance: {
+        type: Sequelize.DOUBLE,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,

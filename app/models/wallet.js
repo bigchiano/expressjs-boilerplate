@@ -12,6 +12,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      wallet.belongsTo(models.user, { foreignKey: 'userId', as: 'user' })
+      wallet.hasMany(models.transaction, { foreignKey: 'id', as: 'transactions' })
     }
   }
 
@@ -25,7 +27,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      balance: {
+      ledger_balance: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+      },
+      available_balance: {
         type: DataTypes.DOUBLE,
         allowNull: false,
       }

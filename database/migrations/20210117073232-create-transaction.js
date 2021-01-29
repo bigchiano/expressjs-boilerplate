@@ -11,6 +11,10 @@ module.exports = {
       walletId: {
         type: Sequelize.STRING
       },
+      transactionType: {
+        type: Sequelize.ENUM('withdrawal', 'deposit') ,
+        allowNull: false,
+      },
       previousBalance: {
         type: Sequelize.DOUBLE
       },

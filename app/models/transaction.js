@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      transaction.belongsTo(models.wallet, { foreignKey: 'walletId', as: 'wallet' })
     }
   }
 
@@ -23,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       walletId: {
         type: DataTypes.STRING,
+        allowNull: false,
+      },
+      transactionType: {
+        type: DataTypes.ENUM('withdrawal', 'deposit') ,
         allowNull: false,
       },
       previousBalance: {
