@@ -1,6 +1,6 @@
 const BaseRepository = require('./BaseRepository')
-const User = require('../../models').user
-const Wallet = require('../../models').wallet
+const User = require('../models').user
+const Wallet = require('../models').wallet
 
 // const { sendWelcomeEmail } = require('../emails/mailer');
 

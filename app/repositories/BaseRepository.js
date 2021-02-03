@@ -1,6 +1,6 @@
 // initialize streams on models
 const SequelizeStream = require('node-sequelize-stream')
-const sequelize = require('../../models').sequelize
+const sequelize = require('../models').sequelize
 SequelizeStream(sequelize)
 class BaseRepository {
   constructor(model) {

@@ -1,6 +1,4 @@
-const BaseRepository = require('../repositories/sequelize/BaseRepository')
-const UserRepository = require('../repositories/sequelize/UserRepository')
-const User = require('../models').user
+const UserRepository = require('../repositories/UserRepository')
 
 const response = require('../utils/response')
 
