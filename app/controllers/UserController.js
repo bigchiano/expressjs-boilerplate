@@ -1,6 +1,6 @@
 const UserRepository = require('../repositories/UserRepository')
 
-const response = require('../utils/response')
+const response = require('../libs/response')
 
 class UserContoller {
   static async create(req, res) {

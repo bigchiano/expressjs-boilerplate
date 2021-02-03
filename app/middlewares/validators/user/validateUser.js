@@ -1,5 +1,5 @@
 const { query, validationResult } = require('express-validator')
-const response = require('../../../utils/response')
+const response = require('../../../libs/response')
 
 const messages = {
   firstName: 'First name is required',
