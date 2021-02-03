@@ -2,10 +2,11 @@ const BaseRepository = require('./BaseRepository')
 const User = require('../models').user
 const Wallet = require('../models').wallet
 
-// const { sendWelcomeEmail } = require('../emails/mailer');
+const { sendWelcomeEmail } = require('../emails/mailer')
 
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
+const { makeid } = require('../libs/helperFunctions')
 class UserRepository {
     static async generateAuthToken(user) {
         const token = jwt.sign(
@@ -13,9 +14,7 @@ class UserRepository {
             process.env.JWT_SECRET
         )
 
-        const tokens = user.tokens
-            ? JSON.parse(user.tokens)
-            : {}
+        const tokens = user.tokens ? JSON.parse(user.tokens) : {}
         tokens[token] = true
         user.tokens = JSON.stringify(tokens)
         await user.save()
@@ -30,6 +29,10 @@ class UserRepository {
             throw new Error('User with email already exits!!')
         }
 
+        // create email verification string
+        const verifyString = makeid(7)
+
+        data.verifyString = verifyString
         const createUser = await userModel.save(data)
         const token = await this.generateAuthToken(createUser)
         const user = createUser.toJSON()
@@ -37,21 +40,23 @@ class UserRepository {
         const walletModel = new BaseRepository(Wallet)
         const userWalletData = {
             userId: user.id,
-            ledger_balance: 0.00,
-            available_balance: 0.00
+            ledger_balance: 0.0,
+            available_balance: 0.0
         }
 
         const userWallet = await walletModel.save(userWalletData)
         user.wallet = userWallet
 
         // send verification email
-        // sendWelcomeEmail(user.email, user.name).catch(error => {
-        //   return error.message
-        // });
+        sendWelcomeEmail({
+            name: 'Chris',
+            email: 'itzchristar@gmail.com',
+            verifyString
+        })
 
         delete user.tokens
         delete user.password
-        
+
         return { user, token }
     }
 

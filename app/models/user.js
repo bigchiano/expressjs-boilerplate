@@ -36,6 +36,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         // allowNull defaults to true
       },
+      emailVerified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+      },
+      verifyString: {
+        type: DataTypes.STRING,
+      },
       password: {
         type: DataTypes.STRING,
         allowNull: false,

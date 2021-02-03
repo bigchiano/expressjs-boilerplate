@@ -18,6 +18,13 @@ module.exports = {
       lastName: {
         type: Sequelize.STRING,
       },
+      emailVerified: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
+      verifyString: {
+        type: Sequelize.STRING,
+      },
       password: {
         type: Sequelize.STRING,
         allowNull: false,
